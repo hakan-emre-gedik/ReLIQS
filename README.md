@@ -85,23 +85,11 @@ For example, a KonIQ-only setup can contain:
 | Path relative to the repository root | Contents |
 | --- | --- |
 | `../vlm_iqa_datasets/KONIQ/images/` | Image files |
-| `../vlm_iqa_datasets/KONIQ/splits/1/train.csv` | Training annotations |
-| `../vlm_iqa_datasets/KONIQ/splits/1/val.csv` | Validation annotations |
-| `../vlm_iqa_datasets/KONIQ/splits/1/test.csv` | Test annotations |
+| `../vlm_iqa_datasets/KONIQ/splits/1/train.txt` | Training annotations |
+| `../vlm_iqa_datasets/KONIQ/splits/1/val.txt` | Validation annotations |
+| `../vlm_iqa_datasets/KONIQ/splits/1/test.txt` | Test annotations |
 
 The directory under `splits/` is selected by the configuration's `split` value. Annotation filenames must contain `train`, `val`, or `test`, respectively.
-
-Annotation files are **tab-separated and have no header**, despite the `.csv` extension. The loader assigns these columns:
-
-| Column | Meaning |
-| --- | --- |
-| `name` | Image path relative to the dataset directory, such as `images/example.jpg` |
-| `mos` | Numeric quality label, with higher values meaning better quality |
-| `distortion`, `scene1`, `scene2`, `scene3` | Metadata columns; unused by the current training code |
-
-Provide the six columns, using placeholders for unused metadata. The loader min-max normalizes quality labels within each annotation file; it does not automatically invert DMOS. SPAQ images are resized to a short edge of 512 pixels by the dataset loader.
-
-**Dataset location:** `Annotated_Dataset.py` currently hard-codes `../vlm_iqa_datasets`. Changing `data.dataset_path` in the JSON alone does not change this location. Use the expected directory, create a symlink to your dataset root, or update `self.path_dataset` in the loader.
 
 **Dataset selection:** `data.dataset_names` and `data.samples` must have matching lengths and ordering. A positive `samples` entry is the per-GPU training batch size for that dataset. Zero disables its training batches, but the dataset remains part of evaluation. The loader constructs train, validation, and test datasets for every listed entry, so all three annotation files must exist even when `samples` is zero.
 
