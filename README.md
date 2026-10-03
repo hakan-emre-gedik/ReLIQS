@@ -230,10 +230,6 @@ python score_image.py \
 
 Dataset evaluation runs within training; no separate evaluation CLI is provided. Keep splits and preprocessing consistent across experiments and select checkpoints using validation data.
 
-## Acknowledgments
-
-We build on CLIP and TinyCLIP and thank their authors and the creators of the IQA datasets used in this work.
-
 ## Citation
 
 If you use ReLIQS in your research, please cite:
