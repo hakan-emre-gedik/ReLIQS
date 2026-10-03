@@ -1,28 +1,52 @@
-# ReLIQS
+<div align="center">
 
-Official implementation of **Learning Where to Look and How to Judge: Resolution-agnostic Image Quality Assessment with Quality-aware Saliency** (CVPR 2026).
+<h1>ReLIQS</h1>
 
-**Hakan Emre Gedik, Shashank Gupta, Alan Bovik**  
-The University of Texas at Austin · University of Colorado Boulder
+<h3>Learning Where to Look and How to Judge</h3>
 
-[Paper](https://openaccess.thecvf.com/content/CVPR2026/papers/Gedik_Learning_Where_to_Look_and_How_to_Judge_Resolution-agnostic_Image_CVPR_2026_paper.pdf) · [CVF Project Page](https://openaccess.thecvf.com/content/CVPR2026/html/Gedik_Learning_Where_to_Look_and_How_to_Judge_Resolution-agnostic_Image_CVPR_2026_paper.html) · [Model Weights](https://huggingface.co/hakanemre/ReLIQS)
+<p>Resolution-agnostic Image Quality Assessment with Quality-aware Saliency</p>
 
+<p>
+  <strong>Hakan Emre Gedik · Shashank Gupta · Alan Bovik</strong><br>
+  The University of Texas at Austin · University of Colorado Boulder
+</p>
+
+<p><strong>Official implementation · CVPR 2026</strong></p>
+
+<p>
+  <a href="https://openaccess.thecvf.com/content/CVPR2026/papers/Gedik_Learning_Where_to_Look_and_How_to_Judge_Resolution-agnostic_Image_CVPR_2026_paper.pdf"><img src="https://img.shields.io/badge/Paper-CVPR_2026-2563EB?style=flat-square" alt="Paper · CVPR 2026"></a>
+  <a href="https://openaccess.thecvf.com/content/CVPR2026/html/Gedik_Learning_Where_to_Look_and_How_to_Judge_Resolution-agnostic_Image_CVPR_2026_paper.html"><img src="https://img.shields.io/badge/CVF-Project_Page-475569?style=flat-square" alt="CVF project page"></a>
+  <a href="https://huggingface.co/hakanemre/ReLIQS"><img src="https://img.shields.io/badge/Hugging_Face-Model_Weights-FFD21E?style=flat-square&amp;logo=huggingface&amp;logoColor=FFD21E" alt="Hugging Face model weights"></a>
+</p>
+
+<p>
+  <a href="#installation">Installation</a> ·
+  <a href="#image-quality-prediction">Inference</a> ·
+  <a href="#saliency-visualization">Saliency</a> ·
+  <a href="#training">Training</a> ·
+  <a href="#citation">Citation</a>
+</p>
+
+</div>
+
+---
 
 ## Overview
 
-**ReLIQS** (**Re**solution-agnostic **L**earning for **I**mage **Q**uality with **S**aliency) predicts image quality without a reference image. It combines multiscale image patches, a CLIP vision encoder, learned quality-aware saliency, and latent quality axes to produce an image-level quality score.
+**ReLIQS** (**Re**solution-agnostic **L**earning for **I**mage **Q**uality with **S**aliency) predicts image quality without a reference image. It combines multiscale patches, CLIP features, quality-aware saliency, and latent quality axes into a single quality score.
 
-- Preserves original-resolution information through patch-based processing.
-- Learns spatial importance directly from image-quality supervision.
-- Supports joint training across datasets using within-dataset ranking and correlation losses.
-- Provides image scoring, saliency visualization, and distributed training.
+- **Resolution-agnostic:** preserves original-resolution cues through patch-based processing.
+- **Quality-aware:** learns spatial importance from image-quality supervision.
+- **Joint training:** combines datasets through within-dataset ranking and correlation losses.
+- **Ready to use:** image scoring, saliency visualization, and distributed training.
 
-![ReLIQS pipeline (Figure 1 of the paper)](assets/overview.png)
-
+<p align="center">
+  <img src="assets/overview.png" alt="ReLIQS pipeline: multiscale patch sampling, quality-aware saliency, and latent quality axes" width="100%">
+  <br>
+  <em>Figure 1. Overview of ReLIQS.</em>
+</p>
 
 ## Installation
-
-Run all commands from the repository root.
 
 ```bash
 git clone https://github.com/hakan-emre-gedik/ReLIQS.git
@@ -33,22 +57,24 @@ source .venv/bin/activate
 python -m pip install --upgrade pip
 ```
 
-Install `torch` and `torchvision` using the [PyTorch installation instructions](https://pytorch.org/get-started/locally/) for your Python version and CUDA driver. Then install the remaining dependencies:
+Install `torch` and `torchvision` using the [PyTorch installation guide](https://pytorch.org/get-started/locally/) for your Python version and CUDA driver, then install the remaining dependencies:
 
 ```bash
 python -m pip install numpy scipy pandas pillow opencv-python \
     matplotlib plotly timm ftfy regex tqdm packaging huggingface_hub
 ```
 
-Training uses Linux, NVIDIA GPUs, NCCL, and CUDA bfloat16 autocasting. Use GPUs with bfloat16 support and a PyTorch build providing `torch.amp` and the `device_id` argument of `init_process_group`. The inference scripts select CUDA when available and otherwise use CPU.
+**Training:** Linux, NVIDIA GPUs with bfloat16 support, and PyTorch with NCCL, `torch.amp`, and `init_process_group(device_id=...)`. **Inference:** automatically uses CUDA when available, otherwise CPU.
 
-The required CLIP and TinyCLIP implementations are included in `clip/` and `tiny_clip/`. Model construction downloads their pretrained backbone weights if they are not already cached, including when loading a ReLIQS checkpoint. Allow internet access on the first run or populate `~/.cache/clip` beforehand on each machine.
+CLIP and TinyCLIP are bundled in `clip/` and `tiny_clip/`. Their backbone weights download on first use, including when loading a ReLIQS checkpoint. For offline use, populate `~/.cache/clip` on each machine beforehand.
+
+> Run all commands from the repository root.
 
 ## Pretrained Weights
 
-Download a compatible checkpoint from **[Hugging Face](https://huggingface.co/hakanemre/ReLIQS)** and save it as `model_weights.pth`, or pass its location through `--checkpoint_path`.
+Download a checkpoint from **[Hugging Face](https://huggingface.co/hakanemre/ReLIQS)**. Save it as `model_weights.pth` or specify its path with `--checkpoint_path`.
 
-Both inference scripts use EMA weights. A checkpoint for image scoring must contain `model_ema` and `patch_sampler_ema`; saliency visualization requires `patch_sampler_ema`.
+Both inference scripts use EMA weights: image scoring requires `model_ema` and `patch_sampler_ema`; saliency visualization requires `patch_sampler_ema`.
 
 ## Image Quality Prediction
 
@@ -58,7 +84,7 @@ python score_image.py \
     --image_path /path/to/image.jpg
 ```
 
-The script prints a scalar as `Score: ...`. Scores are in `[0, 1]`, with higher values indicating better predicted quality. They are model scores rather than values on a particular dataset's original MOS scale.
+Prints `Score: ...` in **[0, 1]**, where **higher is better**. Scores are not calibrated to a dataset's original MOS scale.
 
 ## Saliency Visualization
 
@@ -68,46 +94,46 @@ python output_saliency.py \
     --image_path /path/to/image.jpg
 ```
 
-This saves `saliency.png` in the current directory, overwriting any existing file of that name. The map is resized to the input image dimensions and normalized to an 8-bit grayscale image. Brighter regions have greater learned importance for quality assessment; brightness does not directly represent local quality or distortion severity.
+Saves `saliency.png` at the input image's resolution, overwriting any existing file. The map is normalized to 8-bit grayscale; brighter regions indicate greater learned importance, not local quality or distortion severity.
 
-Both scripts default to `model_weights.pth` and `image.jpg`. They read `options/main_training/koniq.json` through the `CONFIG_PATH` constant and do not currently expose a `--config` argument. Update that constant if using a checkpoint with different model settings. Dataset files are not needed for these two interfaces.
+> **Shared defaults:** both scripts use `model_weights.pth`, `image.jpg`, and `options/main_training/koniq.json`. Change `CONFIG_PATH` in the scripts for different model settings; neither accepts `--config`. Dataset files are not required for inference.
 
 ## Dataset Preparation
 
-Obtain the datasets separately and prepare image paths and subjective quality labels. The loader currently expects each dataset at:
+Split annotations are provided in `vlm_iqa_datasets/`. Download images from the corresponding dataset sources and place each prepared dataset at the loader's expected location:
 
 ```text
 ../vlm_iqa_datasets/<dataset_name>/
 ```
 
-For example, a KonIQ-only setup can contain:
+If keeping datasets inside the repository, update the loader path or create a symlink at `../vlm_iqa_datasets`.
 
-| Path relative to the repository root | Contents |
+For KonIQ, paths relative to the repository root are:
+
+| Path | Contents |
 | --- | --- |
-| `../vlm_iqa_datasets/KONIQ/images/` | Image files |
+| `../vlm_iqa_datasets/KONIQ/images/` | Images |
 | `../vlm_iqa_datasets/KONIQ/splits/1/train.txt` | Training annotations |
 | `../vlm_iqa_datasets/KONIQ/splits/1/val.txt` | Validation annotations |
 | `../vlm_iqa_datasets/KONIQ/splits/1/test.txt` | Test annotations |
 
-The directory under `splits/` is selected by the configuration's `split` value. Annotation filenames must contain `train`, `val`, or `test`, respectively.
+The configuration's `split` selects the directory under `splits/`. Annotation filenames must contain `train`, `val`, or `test`.
 
-**Dataset selection:** `data.dataset_names` and `data.samples` must have matching lengths and ordering. A positive `samples` entry is the per-GPU training batch size for that dataset. Zero disables its training batches, but the dataset remains part of evaluation. The loader constructs train, validation, and test datasets for every listed entry, so all three annotation files must exist even when `samples` is zero.
-
-Keep the other configuration sections unchanged. Split annotations are included in this repository under vlm_iqa_datasets/. The images can be obtained through corrsponding dataset links. 
+**Dataset selection:** keep `data.dataset_names` and `data.samples` aligned. Each positive `samples` entry sets that dataset's per-GPU training batch size. A zero entry disables training on it but retains evaluation. Every listed dataset requires train, validation, and test annotations.
 
 ## Training
 
-Training is launched through `torchrun`. The provided `train.sh` supports both single-machine and multi-machine jobs, with one process per GPU.
+`train.sh` launches `torchrun` with one process per GPU and supports one or multiple machines.
 
 ### One machine
 
-The default is four GPUs:
+Train on four GPUs by default:
 
 ```bash
 bash train.sh options/main_training/koniq.json runs/koniq
 ```
 
-To use two specific GPUs:
+Select two GPUs:
 
 ```bash
 CUDA_VISIBLE_DEVICES=0,1 GPUS_PER_NODE=2 \
@@ -118,7 +144,7 @@ For one GPU, set `GPUS_PER_NODE=1`.
 
 ### Multiple machines
 
-Launch the script on **every participating machine**, assigning a unique `NODE_RANK` from `0` to `NNODES - 1`. For four machines with one GPU each, execute the following on each machine, changing `NODE_RANK` appropriately:
+Run the following on **every machine**, with a unique `NODE_RANK` from `0` to `NNODES - 1`. This example uses four machines with one GPU each:
 
 ```bash
 NNODES=4 \
@@ -129,31 +155,29 @@ MASTER_PORT=29500 \
 bash train.sh options/main_training/koniq.json runs/koniq
 ```
 
-Replace `10.0.0.1` with the reachable address of the rank-0 machine. All machines must use the same node count, GPUs per node, master address, port, code, configuration, and dataset splits. Each needs access to the datasets and dependencies. A scheduler or SSH launcher can start these commands; `torchrun` does not launch them remotely.
+Use the rank-0 machine's reachable address for `MASTER_ADDR`. All machines must share launch settings except `NODE_RANK`, use matching code and configurations, and have access to the same datasets and splits. Launch manually or through a scheduler/SSH launcher; `torchrun` does not start remote commands.
 
-| Environment variable | Default | Purpose |
+| Variable | Default | Purpose |
 | --- | --- | --- |
 | `NNODES` | `1` | Number of machines |
 | `GPUS_PER_NODE` | `4` | GPU processes per machine |
-| `NODE_RANK` | `0` for one machine | Unique machine index; required for multiple machines |
-| `MASTER_ADDR` | `127.0.0.1` for one machine | Rank-0 address; required for multiple machines |
-| `MASTER_PORT` | `29500` | Shared coordination port; choose another for concurrent jobs |
+| `NODE_RANK` | `0` on one machine | Unique machine index; required for multiple machines |
+| `MASTER_ADDR` | `127.0.0.1` on one machine | Rank-0 address; required for multiple machines |
+| `MASTER_PORT` | `29500` | Coordination port; use distinct ports for concurrent jobs |
 
 ### Batch sizes
-
-For each dataset:
 
 ```text
 global_batch_size = samples[dataset_index] * NNODES * GPUS_PER_NODE
 ```
 
-The default KonIQ setting uses 16 images per GPU, giving 64 images across four GPUs. To preserve that global batch size with two GPUs, set its `samples` entry to 32; with one GPU, set it to 64, subject to available memory.
+KonIQ defaults to **16 images per GPU × 4 GPUs = 64 images**. To preserve this global batch size, set KonIQ's entry in `samples` to 32 on two GPUs or 64 on one, subject to available memory.
 
-Predictions are gathered across GPUs before computing the ranking and correlation losses. Changing the global batch size therefore changes the loss calculation; ordinary gradient accumulation is not an equivalent replacement.
+Ranking and correlation losses use predictions gathered across GPUs. Changing the global batch size changes these losses; ordinary gradient accumulation is not equivalent.
 
 ### Configurations
 
-Configuration files are under `options/main_training/`. The table lists datasets with positive training batch sizes; all entries in `dataset_names` are evaluated.
+Configurations are in `options/main_training/`. The table lists training datasets; all entries in `dataset_names` are evaluated.
 
 | Configuration | Training datasets |
 | --- | --- |
@@ -162,38 +186,41 @@ Configuration files are under `options/main_training/`. The table lists datasets
 | `koniq_spaq_kadid_live_csiq_bid.json` | KonIQ, SPAQ, KADID, LIVE, CSIQ, BID, CLIVE (`ChallengeDB_release`) |
 | `koniq_spaq_uhd.json` | KonIQ, SPAQ, UHD |
 
-Key settings in the supplied configurations:
+<details>
+<summary><strong>Configuration reference</strong></summary>
 
 | Setting | Default | Meaning |
 | --- | --- | --- |
 | `split` | `1` | Dataset split directory |
-| `init_epochs` | `16` | Initial training with both vision encoders frozen |
-| `epochs` | `64` | Subsequent end-to-end training epochs |
+| `init_epochs` | `16` | Initial epochs with both vision encoders frozen |
+| `epochs` | `64` | End-to-end training epochs |
 | `lr` / `weight_decay` | `1e-5` / `1e-3` | AdamW settings |
-| `scheduler_T_max` | `5` | Cosine learning-rate scheduler setting |
-| `train_num_patches` | `[6, 5, 1]` | Random training patches per scale, largest to smallest |
-| `patch_size` / `num_scales` | `224` / `3` | Patch dimensions and number of scales |
+| `scheduler_T_max` | `5` | Cosine scheduler setting |
+| `train_num_patches` | `[6, 5, 1]` | Training patches per scale, largest to smallest |
+| `patch_size` / `num_scales` | `224` / `3` | Patch dimensions and scale count |
 | `min_short_edge` | `224` | Smallest-scale short edge |
-| `patch_stride` | `0.75` | Controls evaluation grid density; smaller values produce more patches |
+| `patch_stride` | `0.75` | Evaluation grid density; smaller means more patches |
 | `model_name` / `num_attributes` | `ViT-B/16` / `4` | CLIP backbone and latent quality axes |
 
-The current sampler spaces scale short edges linearly between the input short edge and `min_short_edge`. Evaluation uses a deterministic patch grid and learned pooling weights. It does not currently perform top-k selection; `test_num_patches` and `pool_num_patches` do not control patch counts in the supplied execution path.
+</details>
+
+Scale short edges are spaced linearly between the input short edge and `min_short_edge`. Evaluation uses a deterministic patch grid with learned pooling weights. Top-k selection is not enabled; `test_num_patches` and `pool_num_patches` do not control patch counts in this execution path.
 
 ## Evaluation and Outputs
 
-`main.py` evaluates the primary and EMA models after the initialization stage and after each end-to-end epoch. It reports SRCC and PLCC on the configured test datasets and writes:
+`main.py` evaluates primary and EMA models after initialization and each end-to-end epoch, reporting **SRCC** and **PLCC** on the configured test datasets.
 
 | Output under the run directory | Contents |
 | --- | --- |
-| `checkpoints/checkpoint_-1.pth` | Weights after the initialization stage |
-| `checkpoints/checkpoint_<epoch>.pth` | Weights after each end-to-end epoch, starting at 0 |
+| `checkpoints/checkpoint_-1.pth` | Weights after initialization |
+| `checkpoints/checkpoint_<epoch>.pth` | Epoch checkpoints, starting at 0 |
 | `results/log.csv` | Learning rates and evaluation metrics |
 | `results/Plots.html` | Interactive metric plots |
-| `train_node_<rank>.log` | Console output from each machine |
+| `train_node_<rank>.log` | Per-machine console output |
 
-Checkpoints contain `model`, `model_ema`, `patch_sampler`, and `patch_sampler_ema`. They currently store model weights only; full training resumption is not implemented. On multiple machines, checkpoints and evaluation results are written by global rank 0.
+Checkpoints contain `model`, `model_ema`, `patch_sampler`, and `patch_sampler_ema`. They store weights only; full training resumption is not implemented. Global rank 0 writes checkpoints and evaluation results.
 
-To score an image with a checkpoint from your own run:
+Score an image with a trained checkpoint:
 
 ```bash
 python score_image.py \
@@ -201,11 +228,11 @@ python score_image.py \
     --image_path /path/to/image.jpg
 ```
 
-The repository includes evaluation within training and single-image inference; there is no separate dataset-evaluation CLI in this release. For experimental comparisons, keep dataset splits and preprocessing consistent and use validation data for checkpoint selection.
+Dataset evaluation runs within training; no separate evaluation CLI is provided. Keep splits and preprocessing consistent across experiments and select checkpoints using validation data.
 
 ## Acknowledgments
 
-This implementation builds on CLIP and TinyCLIP. We thank their authors and the creators of the IQA datasets used in this work.
+We build on CLIP and TinyCLIP and thank their authors and the creators of the IQA datasets used in this work.
 
 ## Citation
 
