@@ -46,7 +46,7 @@ The required CLIP and TinyCLIP implementations are included in `clip/` and `tiny
 
 ## Pretrained Weights
 
-Download a compatible checkpoint from **[Hugging Face — link to be added](https://huggingface.co/YOUR_HF_USERNAME/ReLIQS)** and save it as `model_weights.pth`, or pass its location through `--checkpoint_path`.
+Download a compatible checkpoint from **[Hugging Face](https://huggingface.co/hakanemre/ReLIQS)** and save it as `model_weights.pth`, or pass its location through `--checkpoint_path`.
 
 Both inference scripts use EMA weights. A checkpoint for image scoring must contain `model_ema` and `patch_sampler_ema`; saliency visualization requires `patch_sampler_ema`.
 
