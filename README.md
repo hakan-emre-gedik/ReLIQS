@@ -35,8 +35,8 @@
 
 **ReLIQS** (**Re**solution-agnostic **L**earning for **I**mage **Q**uality with **S**aliency) predicts image quality without a reference image. It combines multiscale patches, CLIP features, quality-aware saliency, and latent quality axes into a single quality score.
 
-- **Resolution-agnostic:** preserves original-resolution cues through patch-based processing.
-- **Quality-aware:** learns spatial importance from image-quality supervision.
+- **Resolution-agnostic:** accepts any resolution input image. 
+- **Quality-aware:** learns spatial importance from quality supervision.
 - **Joint training:** combines datasets through within-dataset ranking and correlation losses.
 - **Ready to use:** image scoring, saliency visualization, and distributed training.
 
