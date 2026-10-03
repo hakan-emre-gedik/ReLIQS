@@ -7,7 +7,6 @@ The University of Texas at Austin · University of Colorado Boulder
 
 [Paper](https://openaccess.thecvf.com/content/CVPR2026/papers/Gedik_Learning_Where_to_Look_and_How_to_Judge_Resolution-agnostic_Image_CVPR_2026_paper.pdf) · [CVF Project Page](https://openaccess.thecvf.com/content/CVPR2026/html/Gedik_Learning_Where_to_Look_and_How_to_Judge_Resolution-agnostic_Image_CVPR_2026_paper.html) · [Model Weights](https://huggingface.co/hakanemre/ReLIQS)
 
-> **Weights:** Hugging Face link placeholder; checkpoints will be added here.
 
 ## Overview
 
