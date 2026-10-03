@@ -1,0 +1,33 @@
+{
+  "data": {
+    "dataset_path": "../vlm_iqa_datasets",  
+    "dataset_names": ["KONIQ", "BID", "ChallengeDB_release", "SPAQ", "KADID", "LIVE", "CSIQ", "UHD", "FLIVE", "AGIQA3K", "AIGCQA", "HRIQ"], 
+    "samples":  [16, 0, 0, 16, 0, 0, 0, 10, 0, 0, 0, 0] 
+  },
+  "logging": {
+    "save_dir": "checkpoints",
+    "plot_dir": "results",
+    "print_every": 20
+  },
+  "training": {
+    "split": 1,
+    "epochs": 64, 
+    "init_epochs": 16, 
+    "lr": 1e-5,
+    "weight_decay": 1e-3,     
+    "train_num_patches": [6, 5, 1], 
+    "pool_num_patches": [12, 10, 2], 
+    "min_short_edge": 224, 
+    "scheduler_T_max": 5
+  },
+  "testing": {      
+    "test_num_patches": [32, 16, 2], 
+    "patch_stride": 0.75 
+  },
+  "model": {
+    "model_name": "ViT-B/16",
+    "patch_size": 224, 
+    "num_scales": 3, 
+    "num_attributes": 4 
+  }
+}
