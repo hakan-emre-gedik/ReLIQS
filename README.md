@@ -17,9 +17,7 @@ The University of Texas at Austin · University of Colorado Boulder
 - Supports joint training across datasets using within-dataset ranking and correlation losses.
 - Provides image scoring, saliency visualization, and distributed training.
 
-> **Figure 1 placeholder:** Add the paper's pipeline diagram at `assets/overview.png`, then uncomment the image below.
-
-!-- ![ReLIQS pipeline (Figure 1 of the paper)](assets/overview.png) -->
+![ReLIQS pipeline (Figure 1 of the paper)](assets/overview.png)
 
 
 ## Installation
